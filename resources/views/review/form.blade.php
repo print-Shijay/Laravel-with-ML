@@ -158,6 +158,18 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            display: flex; /* Ensures alignment */
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .recent-item .text-truncate {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            flex-grow: 1; /* Allow it to take up available space */
         }
 
         .recent-item:hover {
@@ -167,30 +179,51 @@
 </head>
 <body>
 
-    <div class="sidebar-container" id="sidebarContainer">
-        <div class="sidebar-toggle-area">
-            <button class="toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
-                <i class="bi bi-list fs-4"></i>
-            </button>
-        </div>
-        <div class="sidebar-content">
-            <button class="btn new-reviewer-btn fw-bold">
-                <i class="bi bi-plus-lg me-2"></i> New Reviewer
-            </button>
-            <hr>
-            <h6 class="text-secondary mb-3">Recent Reviewers</h6>
-            <div class="list-group">
-                @auth
-                    @forelse ($recentReviews as $review)
-                        @empty
-                        <p class="text-muted small px-3">No recent reviews yet...</p>
-                    @endforelse
-                @else
-                    <p class="text-muted small px-3">Log in to save and manage...</p>
-                @endauth
-            </div>
+<div class="sidebar-container" id="sidebarContainer">
+    <div class="sidebar-toggle-area">
+        <button class="toggle-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+    </div>
+    <div class="sidebar-content">
+        <a href="{{ route('review.form') }}" class="btn new-reviewer-btn fw-bold">
+            <i class="bi bi-plus-lg me-2"></i> New Reviewer
+        </a>
+        <hr>
+        <h6 class="text-secondary mb-3">Recent Reviewers</h6>
+        <div class="list-group">
+            @auth
+                @forelse ($recentReviews as $review)
+                    {{-- Updated list item for a cleaner chat/convo style --}}
+                    <a href="{{-- route('review.show', $review->id) --}}#"
+                       class="list-group-item list-group-item-action py-2 recent-item d-flex align-items-center">
+
+                        {{-- Icon for visual flair --}}
+                        <i class="bi bi-file-text me-2 text-primary"></i>
+
+                        <div class="flex-grow-1 overflow-hidden">
+                            {{-- Truncate the summary to create a clear, single-line title --}}
+                            <p class="m-0 text-truncate fw-normal" style="font-size: 0.95rem;">
+                                {{ Str::limit($review->summary, 40, '...') }}
+                            </p>
+                        </div>
+
+                        {{-- Show the date in a subtle, less-detailed way --}}
+                        <small class="text-muted ms-2 flex-shrink-0" style="font-size: 0.75rem;">
+                            {{ $review->created_at->format('M j') }}
+                        </small>
+                    </a>
+                @empty
+                    {{-- This block runs if the collection is empty --}}
+                    <p class="text-muted small px-3">No recent reviews yet...</p>
+                @endforelse
+            @else
+                {{-- Content for unauthenticated users --}}
+                <p class="text-muted small px-3">Log in to save and manage...</p>
+            @endauth
         </div>
     </div>
+</div>
 
     <div class="main-content" id="mainContent">
         <div class="container-fluid h-100 p-0">

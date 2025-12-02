@@ -17,8 +17,11 @@ Route::prefix('auth')->group(function () {
 // 3. AUTHENTICATED USER ROUTES
 Route::middleware('auth')->group(function () {
 
-    // Route for submitting the form and generating the review/questions (MUST BE AUTH)
+    // Route for submitting the form, generating the review, and showing the results (DOES NOT SAVE YET)
     Route::post('/generate', [ReviewController::class, 'generateReview'])->name('review.generate');
+
+    // 👇 NEW: Route for saving the generated data (triggered by the 'Save' button)
+    Route::post('/review/save', [ReviewController::class, 'saveReview'])->name('review.save');
 
     // Display a saved review (Requires a showReview method in ReviewController)
     // Route::get('/review/{review}', [ReviewController::class, 'showReview'])->name('review.show');
