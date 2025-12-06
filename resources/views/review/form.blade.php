@@ -190,18 +190,18 @@
             <i class="bi bi-plus-lg me-2"></i> New Reviewer
         </a>
         <hr>
-        <h6 class="text-secondary mb-3">Recent Reviewers</h6>
+        <h6 class="mb-3 text-secondary">Recent Reviewers</h6>
         <div class="list-group">
             @auth
                 @forelse ($recentReviews as $review)
                     {{-- Updated list item for a cleaner chat/convo style --}}
-                    <a href="{{-- route('review.show', $review->id) --}}#"
-                       class="list-group-item list-group-item-action py-2 recent-item d-flex align-items-center">
+                   <a href="{{ route('review.show', $review->id) }}"
+                       class="py-2 list-group-item list-group-item-action recent-item d-flex align-items-center">
 
                         {{-- Icon for visual flair --}}
                         <i class="bi bi-file-text me-2 text-primary"></i>
 
-                        <div class="flex-grow-1 overflow-hidden">
+                        <div class="overflow-hidden flex-grow-1">
                             {{-- Truncate the summary to create a clear, single-line title --}}
                             <p class="m-0 text-truncate fw-normal" style="font-size: 0.95rem;">
                                 {{ Str::limit($review->summary, 40, '...') }}
@@ -209,27 +209,27 @@
                         </div>
 
                         {{-- Show the date in a subtle, less-detailed way --}}
-                        <small class="text-muted ms-2 flex-shrink-0" style="font-size: 0.75rem;">
+                        <small class="flex-shrink-0 text-muted ms-2" style="font-size: 0.75rem;">
                             {{ $review->created_at->format('M j') }}
                         </small>
                     </a>
                 @empty
                     {{-- This block runs if the collection is empty --}}
-                    <p class="text-muted small px-3">No recent reviews yet...</p>
+                    <p class="px-3 text-muted small">No recent reviews yet...</p>
                 @endforelse
             @else
                 {{-- Content for unauthenticated users --}}
-                <p class="text-muted small px-3">Log in to save and manage...</p>
+                <p class="px-3 text-muted small">Log in to save and manage...</p>
             @endauth
         </div>
     </div>
 </div>
 
     <div class="main-content" id="mainContent">
-        <div class="container-fluid h-100 p-0">
+        <div class="p-0 container-fluid h-100">
 
             <header class="header-content d-flex justify-content-between align-items-center">
-                <h2 class="fw-bold m-0 text-dark">reReview</h2>
+                <h2 class="m-0 fw-bold text-dark">reReview</h2>
 
                 <div class="profile-icon-btn" data-bs-toggle="modal" data-bs-target="#authModal">
                     @auth
@@ -244,9 +244,9 @@
 
             <div class="form-wrapper">
                 <div class="form-scroll-area">
-                    <div class="card p-4 shadow-lg border-0 mx-auto" style="max-width: 800px;">
-                        <h1 class="display-6 fw-light text-center mb-4">🧠 AI Reviewer Tool</h1>
-                        <p class="text-secondary text-center mb-4">Generate key summaries and questions from your text.</p>
+                    <div class="p-4 mx-auto border-0 shadow-lg card" style="max-width: 800px;">
+                        <h1 class="mb-4 text-center display-6 fw-light">🧠 AI Reviewer Tool</h1>
+                        <p class="mb-4 text-center text-secondary">Generate key summaries and questions from your text.</p>
 
                         @if ($errors->any())
                             <div class="alert alert-danger" role="alert">
@@ -268,7 +268,7 @@
                                 <small class="form-text text-muted">This sets the length of the generated summary.</small>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Generate Reviewer & Questions</button>
+                            <button type="submit" class="py-2 btn btn-primary w-100 fw-bold">Generate Reviewer & Questions</button>
                         </form>
                     </div>
                 </div>
@@ -285,37 +285,37 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body p-4">
+                <div class="p-4 modal-body">
                     @auth
-                        <h6 class="fw-bold mb-3">Hello, {{ Auth::user()->name }}!</h6>
+                        <h6 class="mb-3 fw-bold">Hello, {{ Auth::user()->name }}!</h6>
                         <p class="text-secondary small">You are logged in. View your profile or log out.</p>
 
-                        <div class="d-grid gap-2">
+                        <div class="gap-2 d-grid">
                             <a href="{{ route('profile.edit') }}" class="btn btn-outline-primary">View Profile</a>
 
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-secondary w-100 mt-2">Log Out</button>
+                                <button type="submit" class="mt-2 btn btn-outline-secondary w-100">Log Out</button>
                             </form>
                         </div>
                     @else
-                        <div class="d-grid gap-2 mb-3">
-                            <a href="{{ route('login') }}" class="btn btn-primary py-2 fw-bold">
+                        <div class="gap-2 mb-3 d-grid">
+                            <a href="{{ route('login') }}" class="py-2 btn btn-primary fw-bold">
                                 Sign In (Email/Password)
                             </a>
                         </div>
 
-                        <div class="text-center text-secondary small mb-3">
+                        <div class="mb-3 text-center text-secondary small">
                             OR
                         </div>
 
-                        <div class="d-grid gap-2 mb-4">
+                        <div class="gap-2 mb-4 d-grid">
                             <a href="{{ route('socialite.redirect', 'google') }}" class="btn btn-outline-danger">
                                 <i class="bi bi-google me-2"></i> Continue with Google
                             </a>
                         </div>
 
-                        <p class="text-center small m-0">
+                        <p class="m-0 text-center small">
                             Don't have an account? <a href="{{ route('register') }}" class="fw-bold text-decoration-none">Create Account</a>
                         </p>
                     @endauth

@@ -61,24 +61,25 @@
             <h2 class="card-title text-success">Generated Questions</h2>
             <hr>
 
-            @if(count($questions) > 0)
-                <ol>
-                    @foreach($questions as $index => $q)
-                        <li class="mb-3">
-                            <p class="mb-0 fw-bold">{{ $q['question'] ?? 'No question available' }}</p>
+           @if(count($questions) > 0)
+            <ol>
+                @foreach($questions as $q)
+                    <li class="mb-3">
+                        {{-- FIX: Using -> instead of [] --}}
+                        <p class="mb-0 fw-bold">{{ $q->question ?? $q['question'] ?? 'No question available' }}</p>
 
-                            <p class="text-muted small">
-                                <strong>Simplified Answer:</strong>
-                                <span class="badge bg-success">
-                                    {{ $q['answer'] ?? 'N/A' }}
-                                </span>
-                            </p>
-                        </li>
-                    @endforeach
-                </ol>
-            @else
-                <p>No questions were generated from the extracted summary.</p>
-            @endif
+                        <p class="text-muted small">
+                            <strong>Simplified Answer:</strong>
+                            <span class="badge bg-success">
+                                {{ $q->answer ?? $q['answer'] ?? 'N/A' }}
+                            </span>
+                        </p>
+                    </li>
+                @endforeach
+            </ol>
+        @else
+            <p>No questions were generated from the extracted summary.</p>
+        @endif
         </div>
     </div>
 
