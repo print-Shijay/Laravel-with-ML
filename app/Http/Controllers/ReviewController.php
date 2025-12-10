@@ -42,6 +42,64 @@ class ReviewController extends Controller
         ]);
     }
 
+   // In App\Http\Controllers\ReviewController.php
+
+// Note: We change the type-hint from Reviewer $reviewer to the raw $id
+// In App\Http\Controllers\ReviewController.php
+
+public function showReview($id)
+{
+    // Fetch the Reviewer model explicitly by ID
+    $reviewer = Reviewer::findOrFail($id);
+
+    // 1. Policy check: Ensure the authenticated user owns this review
+    if (Auth::id() !== $reviewer->user_id) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    $questions = $reviewer->questions;
+
+    // 2. CRITICAL FIX: Ensure $questions is a PHP array, handling the casting failure.
+    if (is_string($questions)) {
+        // Decode the string, passing 'true' to ensure it's an associative array
+        $questions = json_decode($questions, true);
+    }
+
+    // Fallback: If decoding fails (e.g., corrupted JSON), ensure it's an empty array.
+    if (!is_array($questions)) {
+        $questions = [];
+    }
+
+    // 3. REMOVE dd($questions); <--- It must be removed to show the view!
+
+    return view('review.showResults', [
+        'reviewId' => $reviewer->id,
+        'summary' => $reviewer->summary,
+        'questions' => $questions, // GUARANTEED PHP ARRAY HERE
+        'original_text_length' => $reviewer->summary ? strlen($reviewer->summary) * 4 : 'N/A',
+        'saved' => true,
+        'is_show_view' => true,
+    ]);
+}
+
+    /**
+     * NEW: Deletes a saved review.
+     */
+    public function deleteReview(Reviewer $reviewer)
+    {
+        // 1. Policy check: Ensure the authenticated user owns this review
+        if (Auth::id() !== $reviewer->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // 2. Delete the record
+        $reviewer->delete();
+
+        // 3. Redirect back to the main form with a success message
+        return redirect()->route('review.form')->with('success', 'Review successfully deleted.');
+    }
+
+
     /**
      * Generates the review and questions, but STORES data in the session.
      * The user must click a separate button to persist it to the database.
@@ -65,15 +123,21 @@ class ReviewController extends Controller
     // 2. CALL YOUR PYTHON AI MODEL
     // -----------------------------
     try {
-        $response = Http::post('http://127.0.0.1:8000/summarize', [
-            'text' => $inputText
-        ]);
+        // $response = Http::post('http://127.0.0.1:8000/summarize', [
+        //     'text' => $inputText
+        // ]);
+        $data = ['data' => [$inputText]];
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            ])->post('https://jrsenobio-summarizer.hf.space/api/predict', $data);
+
+        $result = json_decode($response, true);
 
         if (!$response->successful()) {
             return back()->with('error', 'AI Summarizer API returned an error.');
         }
-
-        $reviewerText = $response->json()['summary'];
+        
+        $reviewerText = json_encode($result['data'][0]);
 
     } catch (\Exception $e) {
         return back()->with('error', 'Failed to connect to AI Summarizer API: '.$e->getMessage());

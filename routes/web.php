@@ -24,8 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/review/save', [ReviewController::class, 'saveReview'])->name('review.save');
 
     // Display a saved review (Requires a showReview method in ReviewController)
-    // Route::get('/review/{review}', [ReviewController::class, 'showReview'])->name('review.show');
+    Route::get('/review/{review}', [ReviewController::class, 'showReview'])->name('review.show');
     // NOTE: Add the delete route too once you implement showReview
+    Route::delete('/review/{reviewer}', [ReviewController::class, 'deleteReview'])->name('review.delete');
 
     // Dashboard route (can redirect back to the form page)
     Route::get('/dashboard', function () {
