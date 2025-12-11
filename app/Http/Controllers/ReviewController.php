@@ -10,8 +10,6 @@ use App\Models\Reviewer;
 use Illuminate\Support\Str;
 use Afaya\EdgeTTS\Service\EdgeTTS;
 
-use App\TrainableSummarizer;
-
 use Illuminate\Support\Facades\Http;
 
 class ReviewController extends Controller
@@ -38,7 +36,6 @@ class ReviewController extends Controller
         $directory = public_path('audio');
 
         // 2. Prepare paths
-        $fullPath = $directory . '/' . $fileName;
         $dbPath = 'audio/' . $fileName; // Relative path for DB
 
         if (!file_exists($directory)) {
@@ -116,6 +113,7 @@ class ReviewController extends Controller
         if (!is_array($questions)) {
             $questions = [];
         }
+
 
         // 3. REMOVE dd($questions); <--- It must be removed to show the view!
 
@@ -242,8 +240,9 @@ class ReviewController extends Controller
         $inputText = $request->input('input_text');
         $count = $request->input('sentence_count');
 
-        // 2. Call the generator service for Extractive Summarization
-        $reviewerSentences = $generator->generateReviewer($inputText, $count);
+        // 2. Extract sentences for summarization
+        $allSentences = preg_split('/(?<=[.?!])\s+/', $inputText, -1, PREG_SPLIT_NO_EMPTY);
+        $reviewerSentences = array_slice($allSentences, 0, min($count, count($allSentences)));
         $reviewerText = implode(" ", $reviewerSentences); // Summary
 
         // 3. Call the generator service for Question Creation
@@ -270,7 +269,7 @@ class ReviewController extends Controller
     /**
      * NEW: Retrieves data from the session and saves it to the database.
      */
-    public function saveReview(Request $request)
+    public function saveReview()
     {
         // 1. Check if the user is authenticated
         if (!Auth::check()) {

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reviewer Results</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,5 +85,13 @@
         </div>
     </div>
 
+    <!-- Redirect to show result page after saving review 5 seconds later-->
+    @if(isset($saved) && isset($reviewId))
+        <script>
+            setTimeout(function() {
+                window.location.href = "{{ route('review.show', ['review' => $reviewId]) }}";
+            }, 3000);
+        </script>
+    @endif
 </body>
 </html>
